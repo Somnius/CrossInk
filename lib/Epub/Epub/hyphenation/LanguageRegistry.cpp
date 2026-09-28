@@ -5,6 +5,7 @@
 
 #include "HyphenationCommon.h"
 #include "generated/hyph-de.trie.h"
+#include "generated/hyph-el.trie.h"
 #include "generated/hyph-en.trie.h"
 #include "generated/hyph-es.trie.h"
 #include "generated/hyph-fr.trie.h"
@@ -28,8 +29,9 @@ LanguageHyphenator swedishHyphenator(sv_patterns, isLatinLetter, toLowerLatin);
 LanguageHyphenator ukrainianHyphenator(uk_patterns, isCyrillicLetter, toLowerCyrillic);
 LanguageHyphenator polishHyphenator(pl_patterns, isLatinLetter, toLowerLatin);
 LanguageHyphenator portugueseHyphenator(pt_patterns, isLatinLetter, toLowerLatin);
+LanguageHyphenator greekHyphenator(el_patterns, isGreekLetter, toLowerGreek);
 
-using EntryArray = std::array<LanguageEntry, 10>;
+using EntryArray = std::array<LanguageEntry, 11>;
 
 const EntryArray& entries() {
   static const EntryArray kEntries = {{{"english", "en", &englishHyphenator},
@@ -41,7 +43,8 @@ const EntryArray& entries() {
                                        {"polish", "pl", &polishHyphenator},
                                        {"portuguese", "pt", &portugueseHyphenator},
                                        {"swedish", "sv", &swedishHyphenator},
-                                       {"ukrainian", "uk", &ukrainianHyphenator}}};
+                                       {"ukrainian", "uk", &ukrainianHyphenator},
+                                       {"greek", "el", &greekHyphenator}}};
   return kEntries;
 }
 
