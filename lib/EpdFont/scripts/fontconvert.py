@@ -20,6 +20,7 @@ parser.add_argument("size", type=int, help="font size to use.")
 parser.add_argument("fontstack", action="store", nargs='+', help="list of font files, ordered by descending priority.")
 parser.add_argument("--2bit", dest="is2Bit", action="store_true", help="generate 2-bit greyscale bitmap instead of 1-bit black and white.")
 parser.add_argument("--additional-intervals", dest="additional_intervals", action="append", help="Additional code point intervals to export as min,max. This argument can be repeated.")
+parser.add_argument("--font-exclude-intervals", dest="font_exclude_intervals", action="append", help="Never take these intervals from a font-stack entry, so a later entry serves them (e.g. keep a script consistent from one fallback face). Format: faceIndex:min,max . This argument can be repeated.")
 parser.add_argument("--font-include-intervals", dest="font_include_intervals", action="append", help="Restrict a font-stack entry to specific intervals. Format: faceIndex:min,max . This argument can be repeated.")
 parser.add_argument("--compress", dest="compress", action="store_true", help="Compress glyph bitmaps using DEFLATE with group-based compression.")
 parser.add_argument("--zopfli", dest="zopfli", action="store_true", help="Use Zopfli for the DEFLATE backend instead of zlib. Produces standard raw-DEFLATE streams, at the cost of slower generation. Requires --compress and the 'zopfli' package.")
@@ -177,6 +178,23 @@ if args.font_include_intervals:
             raise ValueError(f"font-include-intervals face index out of range: {spec}")
         font_include_intervals.setdefault(face_idx, []).append(interval)
 
+font_exclude_intervals = {}
+if args.font_exclude_intervals:
+    for spec in args.font_exclude_intervals:
+        face_str, interval_str = spec.split(":", 1)
+        face_idx = int(face_str, base=0)
+        interval = tuple(int(n, base=0) for n in interval_str.split(","))
+        if face_idx < 0 or face_idx >= len(font_stack):
+            raise ValueError(f"font-exclude-intervals face index out of range: {spec}")
+        font_exclude_intervals.setdefault(face_idx, []).append(interval)
+
+def face_allows_code_point(face_index, code_point):
+    allowed_intervals = font_include_intervals.get(face_index)
+    if allowed_intervals and not code_point_in_intervals(code_point, allowed_intervals):
+        return False
+    excluded_intervals = font_exclude_intervals.get(face_index)
+    return not (excluded_intervals and code_point_in_intervals(code_point, excluded_intervals))
+
 def code_point_in_intervals(code_point, cp_intervals):
     for i_start, i_end in cp_intervals:
         if i_start <= code_point <= i_end:
@@ -287,11 +305,15 @@ if args.pnum:
         if count > 0:
             print(f"pnum: {count} glyph substitutions from {font_path}", file=sys.stderr)
 
+def face_serves_code_point(face_index, code_point):
+    if not face_allows_code_point(face_index, code_point):
+        return False
+    return font_stack[face_index].get_char_index(code_point) > 0
+
 def load_glyph(code_point):
     face_index = 0
     while face_index < len(font_stack):
-        allowed_intervals = font_include_intervals.get(face_index)
-        if allowed_intervals and not code_point_in_intervals(code_point, allowed_intervals):
+        if not face_allows_code_point(face_index, code_point):
             face_index += 1
             continue
         face = font_stack[face_index]
@@ -489,8 +511,8 @@ kernable_codepoints = set(cp for cp in all_codepoints
 # (same priority logic as load_glyph).
 cp_to_face_idx = {}
 for cp in kernable_codepoints:
-    for face_idx, f in enumerate(font_stack):
-        if f.get_char_index(cp) > 0:
+    for face_idx in range(len(font_stack)):
+        if face_serves_code_point(face_idx, cp):
             cp_to_face_idx[cp] = face_idx
             break
 
@@ -824,8 +846,8 @@ ligature_codepoints = set(cp for cp in all_codepoints
 # Map ligature codepoints to the font-stack index that serves them
 lig_cp_to_face_idx = {}
 for cp in ligature_codepoints:
-    for face_idx, f in enumerate(font_stack):
-        if f.get_char_index(cp) > 0:
+    for face_idx in range(len(font_stack)):
+        if face_serves_code_point(face_idx, cp):
             lig_cp_to_face_idx[cp] = face_idx
             break
 

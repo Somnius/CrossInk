@@ -2,7 +2,8 @@
 
 ### Added
 
-- Greek hyphenation for EPUBs whose language is `el` (also `gre`/`ell`). Greek text itself needs a Greek SD card font.
+- Greek hyphenation for EPUBs whose language is `el` (also `gre`/`ell`).
+- Modern Greek in the built-in reader fonts (Bitter and Lexend Deca), using matching Noto Serif / Noto Sans Greek glyphs. The UI font is unchanged.
 
 ## [v1.6.0] - 2026-09-21
 
