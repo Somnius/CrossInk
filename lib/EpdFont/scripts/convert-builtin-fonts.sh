@@ -36,12 +36,31 @@ COMMON_FALLBACK_INTERVALS=(
   --additional-intervals 0x2113,0x2113
 )
 
+# Modern (monotonic) Greek: letters with tonos/dialytika, tonos marks, ano teleia
+# and the Greek question mark. The Latin-only reading fonts take these from a
+# matching Noto Greek subset (serif for Bitter, sans for Lexend Deca), so a Greek
+# word never mixes glyphs from two designs. Polytonic Greek (U+1F00+) needs an
+# SD card font.
+GREEK_RANGES=(
+  0x037E,0x037E
+  0x0384,0x038A
+  0x038C,0x038C
+  0x038E,0x03A1
+  0x03A3,0x03CE
+)
+
+GREEK_INTERVALS=()
+for range in "${GREEK_RANGES[@]}"; do
+  GREEK_INTERVALS+=(--additional-intervals "$range")
+done
+
 MUSIC_SYMBOL_INTERVALS=(
   --additional-intervals 0x2669,0x266F
 )
 
 READING_FALLBACK_INTERVALS=(
   "${COMMON_FALLBACK_INTERVALS[@]}"
+  "${GREEK_INTERVALS[@]}"
   "${MUSIC_SYMBOL_INTERVALS[@]}"
 )
 
@@ -128,6 +147,7 @@ generate_family() {
   local source_dir="$2"
   local source_prefix="$3"
   local use_chareink_common_fallback="$4"
+  local greek_source_dir="$5"
 
   for size in ${READING_FONT_SIZES[@]}; do
     for style in ${READING_FONT_STYLES[@]}; do
@@ -139,6 +159,14 @@ generate_family() {
       local font_stack=("$font_path")
       local interval_args=("${READING_FALLBACK_INTERVALS[@]}")
       local include_args=()
+
+      # Greek comes only from the Greek face, even for the few Greek letters
+      # (math-style Δ Ω μ π) the Latin face has, so words stay in one design.
+      font_stack+=("../builtinFonts/source/${greek_source_dir}/${greek_source_dir}-${style}.ttf")
+      include_args+=($(font_include_args $(( ${#font_stack[@]} - 1 )) "${GREEK_RANGES[@]}"))
+      for range in "${GREEK_RANGES[@]}"; do
+        include_args+=(--font-exclude-intervals "0:${range}")
+      done
 
       if [[ "$use_chareink_common_fallback" == "yes" ]]; then
         font_stack+=("../builtinFonts/source/ChareInk7/ChareInk7-${style}.ttf")
@@ -161,8 +189,8 @@ generate_family() {
 
 generate_reading_fonts() {
   echo "Generating built-in reading fonts..."
-  generate_family lexenddeca LexendDeca LexendDeca yes
-  generate_family bitter Bitter Bitter yes
+  generate_family lexenddeca LexendDeca LexendDeca yes NotoSansGreek
+  generate_family bitter Bitter Bitter yes NotoSerifGreek
   echo ""
   echo "Built-in reading fonts complete."
   echo ""
@@ -215,7 +243,7 @@ for size in ${UI_FONT_SIZES[@]}; do
     arabic_path="../builtinFonts/source/NotoSansArabic/NotoSansArabic-${style}.ttf"
     output_path="../builtinFonts/${font_name}.h"
     python fontconvert.py $font_name $size $font_path $hebrew_path $arabic_path \
-      --additional-intervals 0x05D0,0x05EA "${ARABIC_INTERVALS[@]}" > $output_path
+      --additional-intervals 0x05D0,0x05EA "${ARABIC_INTERVALS[@]}" "${GREEK_INTERVALS[@]}" > $output_path
     echo "Generated $output_path"
   done
 done
@@ -226,7 +254,7 @@ python fontconvert.py inter_8_regular 8 \
   ../builtinFonts/source/Inter/Inter-Regular.ttf \
   ../builtinFonts/source/IBMPlexSansHebrew/IBMPlexSansHebrew-Regular.ttf \
   ../builtinFonts/source/NotoSansArabic/NotoSansArabic-Regular.ttf \
-  --additional-intervals 0x05D0,0x05EA "${ARABIC_INTERVALS[@]}" > ../builtinFonts/inter_8_regular.h
+  --additional-intervals 0x05D0,0x05EA "${ARABIC_INTERVALS[@]}" "${GREEK_INTERVALS[@]}" > ../builtinFonts/inter_8_regular.h
 
 echo ""
 echo "Running compression verification..."
