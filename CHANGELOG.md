@@ -6,6 +6,10 @@
 - Greek hyphenation for EPUBs whose language is `el` (also `gre`/`ell`).
 - Greek (Ελληνικά) UI translation.
 
+### Removed
+
+- Vietnamese glyphs from the built-in fonts, the Arabic UI glyphs, and the Vietnamese and Arabic UI translations, so the firmware with Greek is still smaller than v1.6.0. Books in these scripts can still use SD card fonts. A device set to one of these UI languages falls back to English.
+
 ## [v1.6.0] - 2026-09-21
 
 ### Added

@@ -207,6 +207,9 @@ bash ./generate-ui-symbols.sh
 UI_FONT_SIZES=(10 12)
 UI_FONT_STYLES=("Regular" "Bold")
 
+# Arabic UI glyphs are currently left out (ARABIC_INTERVALS is unused) to make
+# flash room for Greek; add "${ARABIC_INTERVALS[@]}" and the NotoSansArabic face
+# back to the Inter commands below to restore them.
 # Arabic glyphs for UI text (menus, file browser titles). The built-in fonts
 # must cover the *output* of MiniBidi's do_shape() — contextual presentation
 # forms — not base letters, or shaped UI text silently drops glyphs.
@@ -240,10 +243,9 @@ for size in ${UI_FONT_SIZES[@]}; do
     font_name="inter_${size}_$(echo $style | tr '[:upper:]' '[:lower:]')"
     font_path="../builtinFonts/source/Inter/Inter-${style}.ttf"
     hebrew_path="../builtinFonts/source/IBMPlexSansHebrew/IBMPlexSansHebrew-${style}.ttf"
-    arabic_path="../builtinFonts/source/NotoSansArabic/NotoSansArabic-${style}.ttf"
     output_path="../builtinFonts/${font_name}.h"
-    python fontconvert.py $font_name $size $font_path $hebrew_path $arabic_path \
-      --additional-intervals 0x05D0,0x05EA "${ARABIC_INTERVALS[@]}" "${GREEK_INTERVALS[@]}" > $output_path
+    python fontconvert.py $font_name $size $font_path $hebrew_path \
+      --additional-intervals 0x05D0,0x05EA "${GREEK_INTERVALS[@]}" > $output_path
     echo "Generated $output_path"
   done
 done
@@ -253,8 +255,7 @@ done
 python fontconvert.py inter_8_regular 8 \
   ../builtinFonts/source/Inter/Inter-Regular.ttf \
   ../builtinFonts/source/IBMPlexSansHebrew/IBMPlexSansHebrew-Regular.ttf \
-  ../builtinFonts/source/NotoSansArabic/NotoSansArabic-Regular.ttf \
-  --additional-intervals 0x05D0,0x05EA "${ARABIC_INTERVALS[@]}" "${GREEK_INTERVALS[@]}" > ../builtinFonts/inter_8_regular.h
+  --additional-intervals 0x05D0,0x05EA "${GREEK_INTERVALS[@]}" > ../builtinFonts/inter_8_regular.h
 
 echo ""
 echo "Running compression verification..."
