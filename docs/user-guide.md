@@ -804,8 +804,9 @@ CrossInk renders text using the following Unicode character blocks, enabling sup
 - **Latin Script (Basic, Supplement, Extended-A/B):** Covers English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Norwegian, Danish, Finnish, Polish, Czech, Hungarian, Romanian, Slovak, Slovenian, Turkish, Catalan, and others.
 - **Cyrillic Script (Standard and Extended):** Covers Russian, Ukrainian, Belarusian, Bulgarian, Serbian, Macedonian, Kazakh, Kyrgyz, Mongolian, and others.
 - **Vietnamese:** Supported via extended Latin glyph coverage in the built-in reader fonts.
+- **Greek (modern, monotonic):** Supported in the built-in reader and UI fonts, with Greek hyphenation for books tagged `el`. Polytonic Greek needs a custom SD card font.
 
-What is not supported with built-in reader fonts: Chinese, Japanese, Korean, Arabic, Greek, Hebrew, and Farsi. However, **CJK, Hebrew, Greek, and other extended scripts can be enabled by installing custom SD card fonts** — see [Custom Fonts (SD Card)](#38-custom-fonts-sd-card).
+What is not supported with built-in reader fonts: Chinese, Japanese, Korean, Arabic, Hebrew, Farsi, and polytonic Greek. However, **CJK, Hebrew, polytonic Greek, and other extended scripts can be enabled by installing custom SD card fonts** — see [Custom Fonts (SD Card)](#38-custom-fonts-sd-card).
 
 ---
 

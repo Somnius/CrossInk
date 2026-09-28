@@ -1,3 +1,11 @@
+## [Unreleased]
+
+### Added
+
+- Greek: the built-in reader fonts (Bitter and Lexend Deca) and UI fonts now include modern Greek letters, using matching Noto Serif / Noto Sans Greek glyphs.
+- Greek hyphenation for EPUBs whose language is `el` (also `gre`/`ell`).
+- Greek (Ελληνικά) UI translation.
+
 ## [v1.6.0] - 2026-09-21
 
 ### Added
