@@ -48,11 +48,39 @@ uint32_t toLowerCyrillicImpl(const uint32_t cp) {
   return cp;
 }
 
+// Convert Greek uppercase letters (monotonic, incl. tonos and dialytika) to lowercase.
+// Final sigma (U+03C2) is already lowercase and is left alone.
+uint32_t toLowerGreekImpl(const uint32_t cp) {
+  if ((cp >= 0x0391 && cp <= 0x03A1) || (cp >= 0x03A3 && cp <= 0x03AB)) {
+    return cp + 0x20;  // Α..Ρ, Σ..Ϋ
+  }
+  switch (cp) {
+    case 0x0386:      // Ά
+      return 0x03AC;  // ά
+    case 0x0388:      // Έ
+      return 0x03AD;  // έ
+    case 0x0389:      // Ή
+      return 0x03AE;  // ή
+    case 0x038A:      // Ί
+      return 0x03AF;  // ί
+    case 0x038C:      // Ό
+      return 0x03CC;  // ό
+    case 0x038E:      // Ύ
+      return 0x03CD;  // ύ
+    case 0x038F:      // Ώ
+      return 0x03CE;  // ώ
+    default:
+      return cp;
+  }
+}
+
 }  // namespace
 
 uint32_t toLowerLatin(const uint32_t cp) { return toLowerLatinImpl(cp); }
 
 uint32_t toLowerCyrillic(const uint32_t cp) { return toLowerCyrillicImpl(cp); }
+
+uint32_t toLowerGreek(const uint32_t cp) { return toLowerGreekImpl(cp); }
 
 bool isLatinLetter(const uint32_t cp) {
   if ((cp >= 'A' && cp <= 'Z') || (cp >= 'a' && cp <= 'z')) {
@@ -82,7 +110,13 @@ bool isLatinLetter(const uint32_t cp) {
 
 bool isCyrillicLetter(const uint32_t cp) { return (cp >= 0x0400 && cp <= 0x052F); }
 
-bool isAlphabetic(const uint32_t cp) { return isLatinLetter(cp) || isCyrillicLetter(cp); }
+// Greek and Coptic letters (U+0386..U+03FF, skipping the ano teleia U+0387) plus Greek Extended
+// (polytonic) letters. Unassigned codepoints inside the ranges never appear in valid text.
+bool isGreekLetter(const uint32_t cp) {
+  return (cp >= 0x0386 && cp <= 0x03FF && cp != 0x0387) || (cp >= 0x1F00 && cp <= 0x1FFF);
+}
+
+bool isAlphabetic(const uint32_t cp) { return isLatinLetter(cp) || isCyrillicLetter(cp) || isGreekLetter(cp); }
 
 bool isPunctuation(const uint32_t cp) {
   switch (cp) {
@@ -114,6 +148,8 @@ bool isPunctuation(const uint32_t cp) {
     case 0x2039:  // ‹
     case 0x203A:  // ›
     case 0x2026:  // …
+    case 0x037E:  // Greek question mark
+    case 0x0387:  // Greek ano teleia
       return true;
     default:
       return false;

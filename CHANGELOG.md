@@ -1,3 +1,9 @@
+## [Unreleased]
+
+### Added
+
+- Greek hyphenation for EPUBs whose language is `el` (also `gre`/`ell`). Greek text itself needs a Greek SD card font.
+
 ## [v1.6.0] - 2026-09-21
 
 ### Added
