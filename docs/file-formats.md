@@ -303,6 +303,14 @@ Binary layout:
 
 ## `section.bin`
 
+### Version 78
+
+Version 78 keeps the serialized layout unchanged. It was bumped because Greek
+words now hyphenate with the Greek patterns even when the book's `dc:language`
+is another language or missing, so line breaks change for those books. Complete
+files use byte `78`; suspended partials use the previously unused sentinel
+`0xF2`. Both older full and partial layouts rebuild automatically.
+
 ### Version 77
 
 Version 77 keeps the serialized layout unchanged. It was bumped because ordered

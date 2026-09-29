@@ -51,6 +51,20 @@ const LanguageHyphenator* hyphenatorForLanguage(const std::string& langTag) {
   return getLanguageHyphenatorForPrimaryTag(primary);
 }
 
+// Greek words use the Greek patterns whatever the book's dc:language says. Greek EPUBs,
+// translations especially, are often tagged "en" or not tagged at all, and the English
+// (or no) hyphenator can't break Greek letters. Greek has one set of patterns, so the
+// script alone is enough to pick it.
+const LanguageHyphenator* hyphenatorForWord(const std::vector<CodepointInfo>& cps,
+                                            const LanguageHyphenator* preferred) {
+  static const LanguageHyphenator* const greek = getLanguageHyphenatorForPrimaryTag("el");
+  if (preferred == greek) return preferred;
+  for (const auto& cp : cps) {
+    if (isGreekLetter(cp.value)) return greek;
+  }
+  return preferred;
+}
+
 // Maps a codepoint index back to its byte offset inside the source word.
 size_t byteOffsetForIndex(const std::vector<CodepointInfo>& cps, const size_t index) {
   return (index < cps.size()) ? cps[index].byteOffset : (cps.empty() ? 0 : cps.back().byteOffset);
@@ -180,7 +194,7 @@ std::vector<Hyphenator::BreakInfo> Hyphenator::breakOffsets(const std::string& w
   // Convert to codepoints and normalize word boundaries.
   auto cps = collectCodepoints(word);
   trimSurroundingPunctuationAndFootnote(cps);
-  const auto* hyphenator = cachedHyphenator_;
+  const auto* hyphenator = hyphenatorForWord(cps, cachedHyphenator_);
 
   // Detect apostrophe-like separators early; used by both branches below.
   bool hasApostropheLikeSeparator = false;
