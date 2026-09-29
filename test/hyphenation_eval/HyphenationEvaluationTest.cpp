@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "lib/Epub/Epub/hyphenation/HyphenationCommon.h"
+#include "lib/Epub/Epub/hyphenation/Hyphenator.h"
 #include "lib/Epub/Epub/hyphenation/LanguageHyphenator.h"
 #include "lib/Epub/Epub/hyphenation/LanguageRegistry.h"
 
@@ -234,3 +235,24 @@ TEST(HyphenationEval, Polish) { runLanguageEval("polish", "pl", "polish_hyphenat
 TEST(HyphenationEval, Portuguese) { runLanguageEval("portuguese", "pt", "portuguese_hyphenation_tests.txt", 99.00); }
 TEST(HyphenationEval, Swedish) { runLanguageEval("swedish", "sv", "swedish_hyphenation_tests.txt", 94.01); }
 TEST(HyphenationEval, Greek) { runLanguageEval("greek", "el", "greek_hyphenation_tests.txt", 99.00); }
+
+// Greek EPUBs are often tagged "en" or not tagged at all; Greek words must still use the Greek patterns.
+TEST(HyphenationEval, GreekWordsIgnoreBookLanguage) {
+  const auto hyphenated = [](const std::string& word) {
+    std::string out;
+    size_t prev = 0;
+    for (const auto& info : Hyphenator::breakOffsets(word, false)) {
+      out += word.substr(prev, info.byteOffset - prev) + "-";
+      prev = info.byteOffset;
+    }
+    return out + word.substr(prev);
+  };
+  for (const char* lang : {"en", "", "de", "el"}) {
+    Hyphenator::setPreferredLanguage(lang);
+    EXPECT_EQ(hyphenated("καλημέρα"), "κα-λη-μέ-ρα") << "book language: " << lang;
+    EXPECT_EQ(hyphenated("ηλεκτρονικός"), "ηλε-κτρο-νι-κός") << "book language: " << lang;
+  }
+  Hyphenator::setPreferredLanguage("en");
+  EXPECT_EQ(hyphenated("hyphenation"), "hyphen-ation");
+  Hyphenator::setPreferredLanguage("");
+}
