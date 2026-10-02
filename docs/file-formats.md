@@ -303,6 +303,14 @@ Binary layout:
 
 ## `section.bin`
 
+### Version `0xB0` (Greek builds)
+
+Same layout as version 78. Bumped because lines may now shrink their word
+spaces by up to a third to fit more text before a word is hyphenated or moved
+to the next line, so line breaks change. Complete
+files use byte `0xB0`; suspended partials use `0xB1`. These bytes are well
+outside the numbers upstream CrossInk uses.
+
 ### Version 78
 
 Version 78 keeps the serialized layout unchanged. It was bumped because Greek

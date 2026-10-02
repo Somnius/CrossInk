@@ -28,11 +28,14 @@ constexpr uint32_t SECTION_CACHE_MAGIC = 0x535843FF;  // bytes: 0xFF, "CXS"
 // v76: Paragraphs without source CSS indentation no longer receive a synthetic indent.
 // v77: Ordered lists, marker suppression, and list-container insets affect page layout.
 // v78: Greek words hyphenate with the Greek patterns whatever the book language says.
-constexpr uint8_t SECTION_FILE_VERSION = 78;
+// 0xB0 (Greek builds, greek3): word spaces may shrink to fill each line, so
+//      line breaks change. A byte well outside the numbers upstream CrossInk
+//      uses, so it never collides with a future upstream version.
+constexpr uint8_t SECTION_FILE_VERSION = 0xB0;
 // Suspended incremental build: valid pages plus LUTs and a parse-watermark trailer.
 // Change this with layout or payload changes so stale partial pages cannot resume
 // under a different layout contract.
-constexpr uint8_t SECTION_FILE_PARTIAL_VERSION = 0xF2;
+constexpr uint8_t SECTION_FILE_PARTIAL_VERSION = 0xB1;  // 0xF2: v78
 constexpr uint32_t HEADER_SIZE =
     sizeof(SECTION_CACHE_MAGIC) + sizeof(uint8_t) + sizeof(int) + sizeof(float) + sizeof(bool) + sizeof(bool) +
     sizeof(uint8_t) + sizeof(uint16_t) + sizeof(uint16_t) + sizeof(bool) + sizeof(bool) + sizeof(uint8_t) +
