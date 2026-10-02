@@ -275,7 +275,7 @@ device model and build.
 
   Note: This reserves 5px of left margin to your screen to provide space for the page numbers. This is only noticeable if your `Left/Right` margins are set to `5`. If the page has no publisher page number, your margins may appear uneven.
 
-- **Hyphenation**: Whether to hyphenate text in Reading Mode; options are "ON" or "OFF".
+- **Hyphenation**: Whether to hyphenate text in Reading Mode; options are "ON" or "OFF". With it on, a line fills up (word spaces may shrink by up to a third) before a word is split or moved to the next line.
 
 - **Reading Orientation**: Set the screen orientation for reading EPUB files:
   - "Portrait" (default) - Standard portrait orientation
@@ -803,7 +803,7 @@ CrossInk renders text using the following Unicode character blocks, enabling sup
 
 - **Latin Script (Basic, Supplement, Extended-A/B):** Covers English, German, French, Spanish, Portuguese, Italian, Dutch, Swedish, Norwegian, Danish, Finnish, Polish, Czech, Hungarian, Romanian, Slovak, Slovenian, Turkish, Catalan, and others.
 - **Cyrillic Script (Standard and Extended):** Covers Russian, Ukrainian, Belarusian, Bulgarian, Serbian, Macedonian, Kazakh, Kyrgyz, Mongolian, and others.
-- **Greek (modern, monotonic):** Supported in the built-in reader and UI fonts, with Greek hyphenation for books tagged `el`. Polytonic Greek needs a custom SD card font.
+- **Greek (modern, monotonic):** Supported in the built-in reader and UI fonts, with Greek hyphenation for Greek words in any book (also when the book is tagged `en` or not tagged). Polytonic Greek needs a custom SD card font.
 
 What is not supported with built-in reader fonts: Chinese, Japanese, Korean, Arabic, Hebrew, Farsi, Vietnamese, and polytonic Greek. However, **CJK, Hebrew, Vietnamese, polytonic Greek, and other extended scripts can be enabled by installing custom SD card fonts** — see [Custom Fonts (SD Card)](#38-custom-fonts-sd-card).
 

@@ -3,8 +3,14 @@
 ### Added
 
 - Greek: the built-in reader fonts (Bitter and Lexend Deca) and UI fonts now include modern Greek letters, using matching Noto Serif / Noto Sans Greek glyphs.
-- Greek hyphenation for EPUBs whose language is `el` (also `gre`/`ell`).
+- Greek hyphenation, for Greek words in any book (also when the EPUB is tagged `en` or has no language).
 - Greek (Ελληνικά) UI translation.
+
+### Changed
+
+- Lines fill up before a word is hyphenated or moved to the next line: word spaces may shrink by up to a third, in every alignment, so a hyphen piece or one more word fits where the line used to stretch or end short.
+- The reader menu's live preview on touch devices lays text out like the page does: it joins words the page split across lines, hyphenates, uses the same spacing and the page's real text width. Changing alignment or size no longer shows stray "ιν-" pieces or wide gaps until the menu closes.
+- Books already opened re-lay out once (section cache `0xB0`).
 
 ### Removed
 
